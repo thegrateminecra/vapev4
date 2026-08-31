@@ -1,4 +1,4 @@
---[[
+﻿--[[
 	Prediction Library
 	Source: https://devforum.roblox.com/t/predict-projectile-ballistics-including-gravity-and-motion/1842434
 ]]

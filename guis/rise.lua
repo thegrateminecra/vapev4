@@ -1,4 +1,4 @@
-local mainapi = {
+﻿local mainapi = {
 	Categories = {},
 	GUIColor = {
 		Hue = 0.46,
@@ -244,7 +244,7 @@ local function downloadFile(path, func)
 	if not isfile(path) then
 		createDownloader(path)
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
@@ -1589,7 +1589,7 @@ components = {
 			label.Name = 'DividerLabel'
 			label.Size = UDim2.fromOffset(218, 27)
 			label.BackgroundTransparency = 1
-			label.Text = '          '..text:upper()
+			label.Text = 'â€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Š'..text:upper()
 			label.TextXAlignment = Enum.TextXAlignment.Left
 			label.TextColor3 = color.Dark(uipallet.Text, 0.43)
 			label.TextSize = 9
@@ -2845,7 +2845,7 @@ mainapi.Categories.Main:CreateDropdown({
 			if shared.VapeDeveloper then
 				loadstring(readfile('newvape/loader.lua'), 'loader')()
 			else
-				loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
+				loadstring(game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
 			end
 		end
 	end
@@ -2873,7 +2873,7 @@ mainapi.Categories.Main:CreateButton({
 		if shared.VapeDeveloper then
 			loadstring(readfile('newvape/loader.lua'), 'loader')()
 		else
-			loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
+			loadstring(game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
 		end
 	end
 })

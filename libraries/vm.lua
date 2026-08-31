@@ -1,11 +1,11 @@
---[[
+﻿--[[
 	Fiu: https://github.com/rce-incorporated/Fiu
 
 	MIT License
 
 	Copyright (c) 2022-2024 TheGreatSageEqualToHeaven
 	Copyright (c) 2019-2024 Roblox Corporation
-	Copyright (c) 1994–2019 Lua.org, PUC-Rio.
+	Copyright (c) 1994â€“2019 Lua.org, PUC-Rio.
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy of
 	this software and associated documentation files (the "Software"), to deal in

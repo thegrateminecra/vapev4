@@ -1,4 +1,4 @@
-local mainapi = {
+﻿local mainapi = {
 	Categories = {},
 	GUIColor = {
 		Hue = 0.46,
@@ -221,7 +221,7 @@ local function downloadFile(path, func)
 	if not isfile(path) then
 		createDownloader(path)
 		local suc, res = pcall(function()
-			return game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true)
+			return game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true)
 		end)
 		if not suc or res == '404: Not Found' then
 			error(res)
@@ -1438,7 +1438,7 @@ components = {
 		toggle.BorderSizePixel = 0
 		toggle.AutoButtonColor = false
 		toggle.Visible = optionsettings.Visible == nil or optionsettings.Visible
-		toggle.Text = string.rep(' ', 32)..optionsettings.Name
+		toggle.Text = string.rep('â€Š', 32)..optionsettings.Name
 		toggle.TextXAlignment = Enum.TextXAlignment.Left
 		toggle.TextColor3 = uipallet.Text
 		toggle.TextSize = 13
@@ -1711,7 +1711,7 @@ components = {
 			label.Name = 'DividerLabel'
 			label.Size = UDim2.fromOffset(218, 27)
 			label.BackgroundTransparency = 1
-			label.Text = '          '..text:upper()
+			label.Text = 'â€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Š'..text:upper()
 			label.TextXAlignment = Enum.TextXAlignment.Left
 			label.TextColor3 = color.Dark(uipallet.Text, 0.43)
 			label.TextSize = 9
@@ -2072,7 +2072,7 @@ function mainapi:CreateCategory(categorysettings)
 
 		for i, v in components do
 			moduleapi['Create'..i] = function(self, optionsettings)
-				dotsbutton.Text = '·\n·\n·'
+				dotsbutton.Text = 'Â·\nÂ·\nÂ·'
 				return v(optionsettings, modulechildren, moduleapi)
 			end
 		end
@@ -2393,7 +2393,7 @@ function mainapi:CreateLegit(categorysettings)
 
 		for i, v in components do
 			moduleapi['Create'..i] = function(self, optionsettings)
-				dotsbutton.Text = '·\n·\n·'
+				dotsbutton.Text = 'Â·\nÂ·\nÂ·'
 				return v(optionsettings, settingschildren, moduleapi)
 			end
 		end
@@ -3729,7 +3729,7 @@ topbar:CreateDropdown({
 			if shared.VapeDeveloper then
 				loadstring(readfile('newvape/loader.lua'), 'loader')()
 			else
-				loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
+				loadstring(game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
 			end
 		end
 	end,
@@ -3767,7 +3767,7 @@ topbar:CreateButton({
 		if shared.VapeDeveloper then
 			loadstring(readfile('newvape/loader.lua'), 'loader')()
 		else
-			loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
+			loadstring(game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
 		end
 	end,
 	Tooltip = 'This will set your profile to the default settings of Vape'
@@ -3831,7 +3831,7 @@ topbar:CreateButton({
 		if shared.VapeDeveloper then
 			loadstring(readfile('newvape/loader.lua'), 'loader')()
 		else
-			loadstring(game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
+			loadstring(game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/loader.lua', true))()
 		end
 	end,
 	Tooltip = 'Reloads vape for debugging purposes'

@@ -1,4 +1,4 @@
-local mainapi = {
+﻿local mainapi = {
 	Connections = {},
 	Categories = {},
 	GUIColor = {Hue = 0.46, Sat = 0.96, Value = 0.52},
@@ -70,7 +70,7 @@ end
 
 local function downloadFile(path, func)
 	if not isfile(path) then
-		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true) end)
+		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true) end)
 		if not suc or res == '404: Not Found' then error(res) end
 		if path:find('.lua') then res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after vape updates.\n'..res end
 		writefile(path, res)
@@ -228,7 +228,7 @@ components = {
 			label.Name = 'DividerLabel'
 			label.Size = UDim2.fromOffset(218, 27)
 			label.BackgroundTransparency = 1
-			label.Text = '          '..text:upper()
+			label.Text = 'â€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Šâ€Š'..text:upper()
 			label.TextXAlignment = Enum.TextXAlignment.Left
 			label.TextColor3 = color.Dark(uipallet.Text, 0.43)
 			label.TextSize = 9
