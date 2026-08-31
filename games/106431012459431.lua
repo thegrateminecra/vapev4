@@ -28,16 +28,16 @@ local function downloadFile(path, func)
 	return (func or readfile)(path)
 end
 
-vape.Place = 5938036553
+vape.Place = 16483433878
 if isfile('newvape/games/'..vape.Place..'.lua') then
-	loadstring(readfile('newvape/games/'..vape.Place..'.lua'), 'frontlines')()
+	loadstring(readfile('newvape/games/'..vape.Place..'.lua'), 'blocktales')()
 else
 	if not shared.VapeDeveloper then
 		local suc, res = pcall(function()
 			return game:HttpGet('https://raw.githubusercontent.com/thegrateminecra/vapev4/'..readfile('newvape/profiles/commit.txt')..'/games/'..vape.Place..'.lua', true)
 		end)
 		if suc and res ~= '404: Not Found' then
-			loadstring(downloadFile('newvape/games/'..vape.Place..'.lua'), 'frontlines')()
+			loadstring(downloadFile('newvape/games/'..vape.Place..'.lua'), 'blocktales')()
 		end
 	end
 end

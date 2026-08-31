@@ -22,7 +22,6 @@ local runService = cloneref(game:GetService('RunService'))
 
 local gameCamera = workspace.CurrentCamera
 local lplr = playersService.LocalPlayer
-local assetfunction = getcustomasset
 
 local vape = shared.vape
 local entitylib = vape.Libraries.entity
@@ -33,7 +32,7 @@ local tween = vape.Libraries.tween
 local color = vape.Libraries.color
 local whitelist = vape.Libraries.whitelist
 local prediction = vape.Libraries.prediction
-local getcustomasset = vape.Libraries.getcustomasset
+local getvapeasset = vape.Libraries.getvapeasset
 
 local skywars, remotes = {}, {}
 local store = {
@@ -263,7 +262,7 @@ run(function()
 
 	entitylib.getEntityColor = function(ent)
 		ent = ent.Player
-		if not (ent and vape.Categories.Main.Options['Use team color'].Enabled) then return end
+		if not (ent and vape.Settings.Modules.Options['Use team color'].Enabled) then return end
 		if isFriend(ent, true) then
 			return Color3.fromHSV(vape.Categories.Friends.Options['Friends color'].Hue, vape.Categories.Friends.Options['Friends color'].Sat, vape.Categories.Friends.Options['Friends color'].Value)
 		end
@@ -404,6 +403,7 @@ end)
 for _, v in {'Reach', 'TriggerBot', 'Disabler', 'SilentAim', 'AutoRejoin', 'Rejoin', 'ServerHop', 'MurderMystery'} do
 	vape:Remove(v)
 end
+
 run(function()
 	local AutoClicker
 	local CPS
@@ -442,6 +442,7 @@ run(function()
 						AutoClick()
 					end
 				end))
+	
 				AutoClicker:Clean(inputService.InputEnded:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton1 and Thread then
 						task.cancel(Thread)
@@ -475,7 +476,7 @@ run(function()
 		Darker = true
 	})
 end)
-	
+
 run(function()
 	local Sprint
 	local old
@@ -486,10 +487,12 @@ run(function()
 			if callback then
 				old = skywars.SprintingController.disableSprinting
 				skywars.SprintingController.disableSprinting = function(tab, ...)
-					local originalCall = old(tab, ...)
+					local data = old(tab, ...)
+	
 					if not tab.canSprint then
 						task.spawn(function()
 							repeat task.wait(0.1) until tab.canSprint or not Sprint.Enabled
+	
 							if Sprint.Enabled then
 								skywars.SprintingController:enableSprinting(tab)
 							end
@@ -497,11 +500,14 @@ run(function()
 					else
 						skywars.SprintingController:enableSprinting(tab)
 					end
-					return originalCall
+	
+					return data
 				end
+	
 				Sprint:Clean(entitylib.Events.LocalAdded:Connect(function()
 					skywars.SprintingController:disableSprinting()
 				end))
+	
 				skywars.SprintingController:disableSprinting()
 			else
 				skywars.SprintingController.disableSprinting = old
@@ -511,7 +517,7 @@ run(function()
 		Tooltip = 'Sets your sprinting to true.'
 	})
 end)
-	
+
 run(function()
 	local Velocity
 	local Horizontal
@@ -521,21 +527,23 @@ run(function()
 	local connection
 	local rand, old = Random.new()
 	
-	local function velocityFunction(velo, ...)
-		if rand:NextNumber(0, 100) > Chance.Value then return end
+	local function velocityFunction(...)
+		if rand:NextNumber(0, 100) > Chance.Value then return old(...) end
+	
+		local args = table.pack(...)
 		local check = (not Targeting.Enabled) or entitylib.EntityPosition({
 			Range = 50,
 			Part = 'RootPart',
 			Players = true
 		})
-		
+	
 		if check then
 			local hort, vert = (Horizontal.Value / 100), (Vertical.Value / 100)
 			if hort == 0 and vert == 0 then return end
-			velo = Vector3.new(velo.X * hort, velo.Y * vert, velo.Z * hort)
+			args[1] = Vector3.new(args[1].X * hort, args[1].Y * vert, args[1].Z * hort)
 		end
 	
-		return old(velo, ...)
+		return old(unpack(args, 1, args.n))
 	end
 	
 	Velocity = vape.Categories.Combat:CreateModule({
@@ -544,12 +552,13 @@ run(function()
 			if callback then
 				connection = getconnections(debug.getupvalue(debug.getupvalue(skywars.Remotes[remotes['PlayerVelocityController:onStart']].connect, 1).fireClient, 1).OnClientEvent)[1]
 				if not connection then return end
+	
 				old = hookfunction(connection.Function, function(...)
 					return velocityFunction(...)
 				end)
 			else
-				if old then 
-					hookfunction(connection.Function, old) 
+				if old then
+					hookfunction(connection.Function, old)
 				end
 				connection = nil
 			end
@@ -579,7 +588,7 @@ run(function()
 	})
 	Targeting = Velocity:CreateToggle({Name = 'Only when targeting'})
 end)
-	
+
 run(function()
 	local AntiFall
 	local Mode
@@ -665,7 +674,7 @@ run(function()
 		end
 	})
 end)
-	
+
 run(function()
 	local InvMove
 	local old
@@ -674,20 +683,19 @@ run(function()
 		Name = 'InvMove',
 		Function = function(callback)
 			if callback then
-				old = skywars.ScreenController.enableFocus
-				skywars.ScreenController.enableFocus = function(self, screen, ...)
-					screen.Handler.Options.focusedAllowMovement = true
-					return old(self, screen, ...)
+				old = skywars.FocusedController.enableFocus
+				skywars.FocusedController.enableFocus = function(self, screen, ...)
+					return old(self, true, ...)
 				end
 			else
-				skywars.ScreenController.enableFocus = old
+				skywars.FocusedController.enableFocus = old
 				old = nil
 			end
 		end,
-		Tooltip = 'Allows you to continuous movement in menus'
+		Tooltip = 'Allows you to have continuous movement in menus'
 	})
 end)
-	
+
 run(function()
 	local Killaura
 	local Targets
@@ -878,7 +886,7 @@ run(function()
 					box.Size = Vector3.new(3, 5, 3)
 					box.CFrame = CFrame.new(0, -0.5, 0)
 					box.ZIndex = 0
-					box.Parent = vape.gui
+					box.Parent = vape.holder
 					Boxes[i] = box
 				end
 			else
@@ -1029,7 +1037,7 @@ run(function()
 		Tooltip = 'Only attacks when the sword is held'
 	})
 end)
-	
+
 run(function()
 	local NoFall
 	local rayCheck = RaycastParams.new()
@@ -1060,16 +1068,16 @@ run(function()
 		Tooltip = 'Prevents taking fall damage.'
 	})
 end)
-	
+
 run(function()
-	local old, old2
+	local old, oldcheck
 	
 	vape.Categories.Blatant:CreateModule({
 		Name = 'NoSlowdown',
 		Function = function(callback)
 			if callback then
 				old = skywars.HumanoidController.addSpeedModifier
-				old2 = skywars.SprintingController.setCanSprint
+				oldcheck = skywars.SprintingController.setCanSprint
 	
 				skywars.HumanoidController.addSpeedModifier = function(self, index, speed)
 					speed = math.max(speed, 1)
@@ -1077,7 +1085,7 @@ run(function()
 				end
 	
 				skywars.SprintingController.setCanSprint = function(self, canSprint)
-					return old2(self, true)
+					return oldcheck(self, true)
 				end
 	
 				for i, v in skywars.HumanoidController.speedModifiers do
@@ -1085,19 +1093,20 @@ run(function()
 						skywars.HumanoidController:removeSpeedModifier(i)
 					end
 				end
+	
 				skywars.SprintingController:setCanSprint(true)
 				skywars.SprintingController:enableSprinting()
 			else
 				skywars.HumanoidController.addSpeedModifier = old
-				skywars.SprintingController.setCanSprint = old2
+				skywars.SprintingController.setCanSprint = oldcheck
 				old = nil
-				old2 = nil
+				oldcheck = nil
 			end
 		end,
 		Tooltip = 'Prevents slowing down when using items.'
 	})
 end)
-	
+
 run(function()
 	local TargetPart
 	local FOV
@@ -1112,13 +1121,13 @@ run(function()
 				Part = 'RootPart',
 				Players = true
 			})
-		
+	
 			if plr then
 				rayCheck.FilterDescendantsInstances = {plr.Character, gameCamera}
 				rayCheck.CollisionGroup = plr[TargetPart.Value].CollisionGroup
 				local offsetpos = entitylib.character.RootPart.CFrame * skywars.FireOrigin
 				local calc = prediction.SolveTrajectory(offsetpos.Position, 200, math.abs(skywars.Gravity), plr[TargetPart.Value].Position, plr[TargetPart.Value].Velocity, workspace.Gravity, plr.HipHeight, nil, rayCheck)
-				
+	
 				if calc then
 					targetinfo.Targets[plr] = tick() + 1
 					return CFrame.new(offsetpos.Position, calc).LookVector
@@ -1132,10 +1141,11 @@ run(function()
 	local ProjectileAimbot = vape.Categories.Blatant:CreateModule({
 		Name = 'ProjectileAimbot',
 		Function = function(callback)
-			if callback then 
+			if callback then
 				old = hookfunction(skywars.CameraUtil.getCursorDirection, function(...)
 					return aimFunction(...)
 				end)
+	
 				oldMobile = hookfunction(skywars.CameraUtil.getDirection, function(...)
 					return aimFunction(...)
 				end)
@@ -1159,7 +1169,7 @@ run(function()
 		Default = 1000
 	})
 end)
-	
+
 run(function()
 	local ProjectileAura
 	local Targets
@@ -1200,18 +1210,19 @@ run(function()
 								rayCheck.FilterDescendantsInstances = {ent.Character, gameCamera}
 								rayCheck.CollisionGroup = ent.RootPart.CollisionGroup
 								local calc = prediction.SolveTrajectory(offsetpos.Position, 200, math.abs(skywars.Gravity), ent.RootPart.Position, ent.RootPart.Velocity, workspace.Gravity, ent.HipHeight, nil, rayCheck)
-								
+	
 								if calc then
 									targetinfo.Targets[ent] = tick() + 1
 									FireDelays[item] = tick() + 0.5
 									skywars.Remotes[remotes.updateActiveItem]:fire(item.Name)
 									skywars.Remotes[remotes.chargeBow]:fire(CFrame.new(offsetpos.Position, calc).LookVector, 1)
-									skywars.Remotes[remotes.updateActiveItem](store.hand.Name) 
+									skywars.Remotes[remotes.updateActiveItem](store.hand.Name)
 									break
 								end
 							end
 						end
 					end
+	
 					task.wait(0.1)
 				until not ProjectileAura.Enabled
 			end
@@ -1219,7 +1230,7 @@ run(function()
 		Tooltip = 'Shoots people around you'
 	})
 	Targets = ProjectileAura:CreateTargets({
-		Players = true, 
+		Players = true,
 		Walls = true
 	})
 	List = ProjectileAura:CreateTextList({
@@ -1231,12 +1242,12 @@ run(function()
 		Min = 1,
 		Max = 50,
 		Default = 50,
-		Suffix = function(val) 
-			return val == 1 and 'stud' or 'studs' 
+		Suffix = function(val)
+			return val == 1 and 'stud' or 'studs'
 		end
 	})
 end)
-	
+
 run(function()
 	local Scaffold
 	local Expand
@@ -1254,7 +1265,7 @@ run(function()
 					continue
 				end
 	
-				if vec ~= Vector3.zero then 
+				if vec ~= Vector3.zero then
 					table.insert(adjacent, vec)
 				end
 			end
@@ -1287,12 +1298,14 @@ run(function()
 		if math.abs(check.Y - startpos.Y) > 3 then
 			return Vector3.new(poscheck.X, math.clamp(check.Y, startpos.Y, endpos.Y), poscheck.Z)
 		end
+	
 		return Vector3.new(math.clamp(check.X, startpos.X, endpos.X), math.clamp(check.Y, startpos.Y, endpos.Y), math.clamp(check.Z, startpos.Z, endpos.Z))
 	end
 	
 	local function blockProximity(pos)
 		local mag, returned = 60
 		local tab = getBlocksInPoints(pos - Vector3.new(21, 21, 21), pos + Vector3.new(21, 21, 21))
+	
 		for _, v in tab do
 			local blockpos = nearCorner(v, pos)
 			local newmag = (pos - blockpos).Magnitude
@@ -1300,6 +1313,7 @@ run(function()
 				mag, returned = newmag, blockpos
 			end
 		end
+	
 		table.clear(tab)
 		return returned
 	end
@@ -1354,6 +1368,7 @@ run(function()
 							end
 						end
 					end
+	
 					task.wait(0.03)
 				until not Scaffold.Enabled
 			end
@@ -1379,7 +1394,172 @@ run(function()
 	})
 	LimitItem = Scaffold:CreateToggle({Name = 'Limit to items'})
 end)
+
+run(function()
+	local Breaker
+	local Range
+	local BreakerPart
+	local BreakerUI
+	local BreakerRef = skywars.Roact.createRef()
 	
+	local function clean()
+		if not BreakerUI then return end
+		if BreakerPart then
+			BreakerPart:Destroy()
+		end
+	
+		skywars.Roact.unmount(BreakerUI)
+		BreakerUI = nil
+		BreakerPart = nil
+	end
+	
+	local function customHealthbar(block, health, maxHealth, changeHealth)
+		if not BreakerPart then
+			local create = skywars.Roact.createElement
+			local percent = math.clamp(health / maxHealth, 0, 1)
+			local cleanCheck = true
+			local part = Instance.new('Part')
+			part.Size = Vector3.one
+			part.CFrame = block.PrimaryPart.CFrame
+			part.Transparency = 1
+			part.Anchored = true
+			part.CanCollide = false
+			part.Parent = workspace
+			BreakerPart = part
+	
+			BreakerUI = skywars.Roact.mount(create('BillboardGui', {
+				Size = UDim2.fromOffset(249, 102),
+				StudsOffset = Vector3.new(0, 2.5, 0),
+				Adornee = part,
+				MaxDistance = 40,
+				AlwaysOnTop = true
+			}, {
+				create('Frame', {
+					Size = UDim2.fromOffset(160, 50),
+					Position = UDim2.fromOffset(44, 32),
+					BackgroundColor3 = Color3.new(),
+					BackgroundTransparency = 0.5
+				}, {
+					create('UICorner', {CornerRadius = UDim.new(0, 5)}),
+					create('ImageLabel', {
+						Size = UDim2.new(1, 89, 1, 52),
+						Position = UDim2.fromOffset(-48, -31),
+						BackgroundTransparency = 1,
+						Image = getvapeasset('newvape/assets/new/blur.png'),
+						ScaleType = Enum.ScaleType.Slice,
+						SliceCenter = Rect.new(52, 31, 261, 502)
+					}),
+					create('TextLabel', {
+						Size = UDim2.fromOffset(145, 14),
+						Position = UDim2.fromOffset(13, 12),
+						BackgroundTransparency = 1,
+						Text = block.Name,
+						TextXAlignment = Enum.TextXAlignment.Left,
+						TextYAlignment = Enum.TextYAlignment.Top,
+						TextColor3 = Color3.new(),
+						TextScaled = true,
+						Font = Enum.Font.Arial
+					}),
+					create('TextLabel', {
+						Size = UDim2.fromOffset(145, 14),
+						Position = UDim2.fromOffset(12, 11),
+						BackgroundTransparency = 1,
+						Text = block.Name,
+						TextXAlignment = Enum.TextXAlignment.Left,
+						TextYAlignment = Enum.TextYAlignment.Top,
+						TextColor3 = color.Dark(uipallet.Text, 0.16),
+						TextScaled = true,
+						Font = Enum.Font.Arial
+					}),
+					create('Frame', {
+						Size = UDim2.fromOffset(138, 4),
+						Position = UDim2.fromOffset(12, 32),
+						BackgroundColor3 = uipallet.Main
+					}, {
+						create('UICorner', {CornerRadius = UDim.new(1, 0)}),
+						create('Frame', {
+							[skywars.Roact.Ref] = BreakerRef,
+							Size = UDim2.fromScale(percent, 1),
+							BackgroundColor3 = Color3.fromHSV(math.clamp(percent / 2.5, 0, 1), 0.89, 0.75)
+						}, {create('UICorner', {CornerRadius = UDim.new(1, 0)})})
+					})
+				})
+			}), part)
+	
+			task.delay(5, clean)
+		end
+	
+		local progress = math.clamp((health - changeHealth) / maxHealth, 0, 1)
+		if progress == 0 then
+			clean()
+			return
+		end
+	
+		task.delay(0, function()
+			local val = BreakerRef:getValue()
+			if val then
+				tweenService:Create(val, TweenInfo.new(0.3), {
+					Size = UDim2.fromScale(progress, 1),
+					BackgroundColor3 = Color3.fromHSV(math.clamp(progress / 2.5, 0, 1), 0.89, 0.75)
+				}):Play()
+			end
+		end)
+	end
+	
+	Breaker = vape.Categories.World:CreateModule({
+		Name = 'Breaker',
+		Function = function(callback)
+			if callback then
+				local eggs = collection('egg', Breaker)
+				local currentblock
+				local oldblockhealth = 0
+	
+				repeat
+					if entitylib.isAlive and store.hand then
+						local localPosition = entitylib.character.RootPart.Position
+						for _, v in eggs do
+							if v.PrimaryPart and (localPosition - v.PrimaryPart.Position).Magnitude < Range.Value then
+								local hp = v:GetAttribute('Health') or 0
+								if v:GetAttribute('TeamId') == lplr:GetAttribute('TeamId') then continue end
+								if currentblock ~= v then
+									oldblockhealth = hp
+									currentblock = v
+								end
+	
+								if hp ~= oldblockhealth then
+									customHealthbar(v, oldblockhealth, 100, oldblockhealth - hp)
+									oldblockhealth = hp
+								end
+	
+								store.noShoot = tick() + 1
+								if hp <= 0 then continue end
+	
+								if store.hand.Melee then
+									skywars.Remotes[remotes['MeleeController:attemptStrikeDesktop']]:fire(v)
+								elseif store.hand.Pickaxe then
+									skywars.Remotes[remotes.hitBlock]:fire((v.PrimaryPart.Position + Vector3.new(0, 1.5, 0)) // 1)
+								end
+							end
+						end
+					end
+	
+					task.wait(0.016)
+				until not Breaker.Enabled
+			end
+		end,
+		Tooltip = 'Automatically destroys eggs around you'
+	})
+	Range = Breaker:CreateSlider({
+		Name = 'Break range',
+		Min = 1,
+		Max = 40,
+		Default = 40,
+		Suffix = function(val)
+			return val == 1 and 'stud' or 'studs'
+		end
+	})
+end)
+
 run(function()
 	local ChestSteal
 	local Range
@@ -1397,6 +1577,7 @@ run(function()
 					for _, item in items do
 						skywars.Remotes[remotes.updateChest]:fire(self, item.Type, -item.Quantity)
 					end
+	
 					skywars.Remotes[remotes.closeChest]:fire(self)
 					Delay[self] = true
 				end))
@@ -1410,6 +1591,7 @@ run(function()
 							end
 						end
 					end
+	
 					task.wait(0.1)
 				until not ChestSteal.Enabled
 			end
@@ -1421,13 +1603,13 @@ run(function()
 		Min = 0,
 		Max = 10,
 		Default = 10,
-		Suffix = function(val) 
-			return val == 1 and 'stud' or 'studs' 
+		Suffix = function(val)
+			return val == 1 and 'stud' or 'studs'
 		end
 	})
 	Open = ChestSteal:CreateToggle({Name = 'GUI Check'})
 end)
-	
+
 run(function()
 	local AutoBuy
 	local Sword
@@ -1438,18 +1620,19 @@ run(function()
 	local Functions = {}
 	
 	local function buyCheck(currencytable)
-		for i, v in Functions do 
-			v(currencytable) 
+		for _, v in Functions do
+			v(currencytable)
 		end
 	end
 	
 	local function buyUpgrade(name, upgrade, currencytable)
 		local currentitem
 		for shopIndex, shopItem in upgrade.Items do
-			if shopItem.ItemType == name then 
-				currentitem = shopIndex 
+			if shopItem.ItemType == name then
+				currentitem = shopIndex
 			end
 		end
+	
 		if not currentitem then return end
 	
 		for i = currentitem + 1, #upgrade.Items do
@@ -1538,7 +1721,7 @@ run(function()
 		}))
 	end
 end)
-	
+
 run(function()
 	local AutoConsume
 	
@@ -1562,170 +1745,7 @@ run(function()
 		Tooltip = 'Automatically uses shield potions.'
 	})
 end)
-	
-run(function()
-	local Breaker
-	local Range
-	local BreakerPart
-	local BreakerUI
-	local BreakerRef = skywars.Roact.createRef()
-	
-	local function clean()
-		if not BreakerUI then return end
-		if BreakerPart then 
-			BreakerPart:Destroy() 
-		end
-		skywars.Roact.unmount(BreakerUI)
-		BreakerUI = nil
-		BreakerPart = nil
-	end
-	
-	local function customHealthbar(block, health, maxHealth, changeHealth)
-		if not BreakerPart then
-			local create = skywars.Roact.createElement
-			local percent = math.clamp(health / maxHealth, 0, 1)
-			local cleanCheck = true
-			local part = Instance.new('Part')
-			part.Size = Vector3.one
-			part.CFrame = block.PrimaryPart.CFrame
-			part.Transparency = 1
-			part.Anchored = true
-			part.CanCollide = false
-			part.Parent = workspace
-			BreakerPart = part
-	
-			BreakerUI = skywars.Roact.mount(create('BillboardGui', {
-				Size = UDim2.fromOffset(249, 102),
-				StudsOffset = Vector3.new(0, 2.5, 0),
-				Adornee = part,
-				MaxDistance = 40,
-				AlwaysOnTop = true
-			}, {
-				create('Frame', {
-					Size = UDim2.fromOffset(160, 50),
-					Position = UDim2.fromOffset(44, 32),
-					BackgroundColor3 = Color3.new(),
-					BackgroundTransparency = 0.5
-				}, {
-					create('UICorner', {CornerRadius = UDim.new(0, 5)}),
-					create('ImageLabel', {
-						Size = UDim2.new(1, 89, 1, 52),
-						Position = UDim2.fromOffset(-48, -31),
-						BackgroundTransparency = 1,
-						Image = getcustomasset('newvape/assets/new/blur.png'),
-						ScaleType = Enum.ScaleType.Slice,
-						SliceCenter = Rect.new(52, 31, 261, 502)
-					}),
-					create('TextLabel', {
-						Size = UDim2.fromOffset(145, 14),
-						Position = UDim2.fromOffset(13, 12),
-						BackgroundTransparency = 1,
-						Text = block.Name,
-						TextXAlignment = Enum.TextXAlignment.Left,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextColor3 = Color3.new(),
-						TextScaled = true,
-						Font = Enum.Font.Arial
-					}),
-					create('TextLabel', {
-						Size = UDim2.fromOffset(145, 14),
-						Position = UDim2.fromOffset(12, 11),
-						BackgroundTransparency = 1,
-						Text = block.Name,
-						TextXAlignment = Enum.TextXAlignment.Left,
-						TextYAlignment = Enum.TextYAlignment.Top,
-						TextColor3 = color.Dark(uipallet.Text, 0.16),
-						TextScaled = true,
-						Font = Enum.Font.Arial
-					}),
-					create('Frame', {
-						Size = UDim2.fromOffset(138, 4),
-						Position = UDim2.fromOffset(12, 32),
-						BackgroundColor3 = uipallet.Main
-					}, {
-						create('UICorner', {CornerRadius = UDim.new(1, 0)}),
-						create('Frame', {
-							[skywars.Roact.Ref] = BreakerRef,
-							Size = UDim2.fromScale(percent, 1),
-							BackgroundColor3 = Color3.fromHSV(math.clamp(percent / 2.5, 0, 1), 0.89, 0.75)
-						}, {create('UICorner', {CornerRadius = UDim.new(1, 0)})})
-					})
-				})
-			}), part)
-	
-			task.delay(5, clean)
-		end
-	
-		local newpercent = math.clamp((health - changeHealth) / maxHealth, 0, 1)
-		if newpercent == 0 then 
-			clean() 
-			return 
-		end
-		
-		task.delay(0, function()
-			local val = BreakerRef:getValue()
-			if val then
-				tweenService:Create(val, TweenInfo.new(0.3), {
-					Size = UDim2.fromScale(newpercent, 1), 
-					BackgroundColor3 = Color3.fromHSV(math.clamp(newpercent / 2.5, 0, 1), 0.89, 0.75)
-				}):Play()
-			end
-		end)
-	end
-	
-	Breaker = vape.Categories.Minigames:CreateModule({
-		Name = 'Breaker',
-		Function = function(callback)
-			if callback then
-				local eggs = collection('egg', Breaker)
-				local currentblock
-				local oldblockhealth = 0
-				
-				repeat
-					if entitylib.isAlive and store.hand then
-						local localPosition = entitylib.character.RootPart.Position
-						for i, v in eggs do
-							if v.PrimaryPart and (localPosition - v.PrimaryPart.Position).Magnitude < Range.Value then
-								local hp = v:GetAttribute('Health') or 0
-								if v:GetAttribute('TeamId') == lplr:GetAttribute('TeamId') then continue end
-								if currentblock ~= v then
-									oldblockhealth = hp
-									currentblock = v
-								end
-	
-								if hp ~= oldblockhealth then
-									customHealthbar(v, oldblockhealth, 100, oldblockhealth - hp)
-									oldblockhealth = hp
-								end
-	
-								store.noShoot = tick() + 1
-								if hp <= 0 then continue end
-								if store.hand.Melee then 
-									skywars.Remotes[remotes['MeleeController:attemptStrikeDesktop']]:fire(v)
-								elseif store.hand.Pickaxe then 
-									skywars.Remotes[remotes.hitBlock]:fire((v.PrimaryPart.Position + Vector3.new(0, 1.5, 0)) // 1)
-								end
-							end
-						end
-					end
-					
-					task.wait(0.016)
-				until not Breaker.Enabled
-			end
-		end,
-		Tooltip = 'Automatically destroys eggs around you'
-	})
-	Range = Breaker:CreateSlider({
-		Name = 'Break range',
-		Min = 1,
-		Max = 40,
-		Default = 40,
-		Suffix = function(val) 
-			return val == 1 and 'stud' or 'studs' 
-		end
-	})
-end)
-	
+
 run(function()
 	local Viewmodel
 	local oldtool
@@ -1780,4 +1800,3 @@ run(function()
 		Tooltip = 'Replaces the default viewmodel'
 	})
 end)
-	

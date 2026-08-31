@@ -1,13 +1,6 @@
 repeat task.wait() until game:IsLoaded()
 if shared.vape then shared.vape:Uninject() end
 
--- why do exploits fail to implement anything correctly? Is it really that hard?
-if identifyexecutor then
-	if table.find({'Argon', 'Wave'}, ({identifyexecutor()})[1]) then
-		getgenv().setthreadidentity = nil
-	end
-end
-
 local vape
 local loadstring = function(...)
 	local res, err = loadstring(...)
@@ -50,7 +43,7 @@ local function finishLoading()
 	task.spawn(function()
 		repeat
 			vape:Save()
-			task.wait(300)
+			task.wait(10)
 		until not vape.Loaded
 	end)
 
@@ -79,8 +72,8 @@ local function finishLoading()
 
 	if not shared.vapereload then
 		if not vape.Categories then return end
-		if vape.Categories.Main.Options['GUI bind indicator'].Enabled then
-			vape:CreateNotification('Finished Loading', vape.VapeButton and 'Press the button in the top right to open GUI' or 'Press '..table.concat(vape.Keybind, ' + '):upper()..' to open GUI', 5)
+		if vape.Settings.GUI.Options['GUI bind indicator'].Enabled then
+			vape:CreateNotification('Finished Loading', vape.VapeButton and 'Press the button in the top right to open GUI' or 'Press '..table.concat(vape.GUIBind.Keys, ' + '):upper()..' to open GUI', 5)
 		end
 	end
 end
@@ -88,7 +81,7 @@ end
 if not isfile('newvape/profiles/gui.txt') then
 	writefile('newvape/profiles/gui.txt', 'new')
 end
-local gui = readfile('newvape/profiles/gui.txt')
+local gui = 'new'--readfile('newvape/profiles/gui.txt')
 
 if not isfolder('newvape/assets/'..gui) then
 	makefolder('newvape/assets/'..gui)
