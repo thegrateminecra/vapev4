@@ -1,4 +1,4 @@
-﻿local entitylib = {
+local entitylib = {
 	isAlive = false,
 	character = {},
 	List = {},

@@ -1,4 +1,4 @@
-﻿if not get_comm_channel or not create_comm_channel then
+if not get_comm_channel or not create_comm_channel then
 	return '1'
 end
 

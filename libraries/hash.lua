@@ -1,4 +1,4 @@
-﻿-- HashLib by Egor Skriptunoff, boatbomber, and howmanysmall, I'm not trusting exploits to have a built in crypt library.
+-- HashLib by Egor Skriptunoff, boatbomber, and howmanysmall, I'm not trusting exploits to have a built in crypt library.
 
 --[=[------------------------------------------------------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 	Fiu: https://github.com/rce-incorporated/Fiu
 
 	MIT License
