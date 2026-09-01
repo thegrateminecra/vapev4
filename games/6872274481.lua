@@ -951,7 +951,9 @@ run(function()
 
 						if blockhealthbar.blockHealth <= 0 then
 							bedwars.BlockBreaker.breakEffect:playBreak(dblock.Name, dpos, lplr)
-							bedwars.BlockBreaker.healthbarMaid:DoCleaning()
+							if bedwars.BlockBreaker.healthbarMaid then
+								bedwars.BlockBreaker.healthbarMaid:DoCleaning()
+							end
 							blockhealthbar.breakingBlockPosition = Vector3.zero
 						else
 							bedwars.BlockBreaker.breakEffect:playHit(dblock.Name, dpos, lplr)
@@ -1629,6 +1631,7 @@ run(function()
 	local Particles, Boxes = {}, {}
 	local anims, AnimDelay, AnimTween, armC0 = vape.Libraries.auraanims, tick()
 	local AttackRemote = {FireServer = function() end}
+	local origViewmodelIsVisible, origViewmodelPlayAnim
 	task.spawn(function()
 		AttackRemote = bedwars.Client:Get(remotes.AttackEntity).instance
 	end)
@@ -1670,22 +1673,17 @@ run(function()
 				end
 
 				if Animation.Enabled and not (identifyexecutor and table.find({'Argon', 'Delta'}, ({identifyexecutor()})[1])) then
-					local fake = {
-						Controllers = {
-							ViewmodelController = {
-								isVisible = function()
-									return not Attacking
-								end,
-								playAnimation = function(...)
-									if not Attacking then
-										bedwars.ViewmodelController:playAnimation(select(2, ...))
-									end
-								end
-							}
-						}
-					}
-					debug.setupvalue(oldSwing or bedwars.SwordController.playSwordEffect, 6, fake)
-					debug.setupvalue(bedwars.ScytheController.playLocalAnimation, 3, fake)
+					local vm = bedwars.ViewmodelController
+					origViewmodelIsVisible = vm.isVisible
+					origViewmodelPlayAnim = vm.playAnimation
+					vm.isVisible = function(self, ...)
+						if Attacking then return false end
+						return origViewmodelIsVisible(self, ...)
+					end
+					vm.playAnimation = function(self, ...)
+						if Attacking then return end
+						return origViewmodelPlayAnim(self, ...)
+					end
 
 					task.spawn(function()
 						local started = false
@@ -1743,7 +1741,7 @@ run(function()
 							})
 
 							if #plrs > 0 then
-								switchItem(sword.tool, 0)
+								pcall(switchItem, sword.tool, 0)
 								local selfpos = entitylib.character.RootPart.Position
 								local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
 
@@ -1767,21 +1765,23 @@ run(function()
 									})
 									targetinfo.Targets[v] = tick() + 1
 
-									if not Attacking then
-										Attacking = true
-										store.KillauraTarget = v
-										if not Swing.Enabled and AnimDelay < tick() and not LegitAura.Enabled then
-											AnimDelay = tick() + (meta and meta.sword and meta.sword.respectAttackSpeedForEffects and meta.sword.attackSpeed or 0.11)
+								if not Attacking then
+									Attacking = true
+									store.KillauraTarget = v
+									if not Swing.Enabled and AnimDelay < tick() and not LegitAura.Enabled then
+										AnimDelay = tick() + (meta and meta.sword and meta.sword.respectAttackSpeedForEffects and meta.sword.attackSpeed or 0.11)
+										pcall(function()
 											bedwars.SwordController:playSwordEffect(meta, false)
 											if meta and meta.displayName and meta.displayName:find(' Scythe') then
 												bedwars.ScytheController:playLocalAnimation()
 											end
+										end)
 
-											if vape.ThreadFix then
-												setthreadidentity(8)
-											end
+										if vape.ThreadFix then
+											setthreadidentity(8)
 										end
 									end
+								end
 
 									if delta.Magnitude > AttackRange.Value then continue end
 
@@ -1857,8 +1857,12 @@ run(function()
 						lplr.PlayerGui.MobileUI['2'].Visible = true
 					end)
 				end
-				debug.setupvalue(oldSwing or bedwars.SwordController.playSwordEffect, 6, bedwars.Knit)
-				debug.setupvalue(bedwars.ScytheController.playLocalAnimation, 3, bedwars.Knit)
+				if origViewmodelIsVisible then
+					bedwars.ViewmodelController.isVisible = origViewmodelIsVisible
+					bedwars.ViewmodelController.playAnimation = origViewmodelPlayAnim
+					origViewmodelIsVisible = nil
+					origViewmodelPlayAnim = nil
+				end
 				Attacking = false
 				if armC0 then
 					AnimTween = tweenService:Create(gameCamera.Viewmodel.RightHand.RightWrist, TweenInfo.new(AnimationTween.Enabled and 0.001 or 0.3, Enum.EasingStyle.Exponential), {

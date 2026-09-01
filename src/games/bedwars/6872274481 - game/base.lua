@@ -951,7 +951,9 @@ run(function()
 
 						if blockhealthbar.blockHealth <= 0 then
 							bedwars.BlockBreaker.breakEffect:playBreak(dblock.Name, dpos, lplr)
-							bedwars.BlockBreaker.healthbarMaid:DoCleaning()
+							if bedwars.BlockBreaker.healthbarMaid then
+								bedwars.BlockBreaker.healthbarMaid:DoCleaning()
+							end
 							blockhealthbar.breakingBlockPosition = Vector3.zero
 						else
 							bedwars.BlockBreaker.breakEffect:playHit(dblock.Name, dpos, lplr)
