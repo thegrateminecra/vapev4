@@ -729,8 +729,6 @@ run(function()
 		AfkStatus = debug.getproto(Knit.Controllers.AfkController.KnitStart, 1),
 		AttackEntity = Knit.Controllers.SwordController.sendServerRequest,
 		BeePickup = Knit.Controllers.BeeNetController.trigger,
-		CannonAim = debug.getproto(Knit.Controllers.CannonController.startAiming, 5),
-		CannonLaunch = Knit.Controllers.CannonHandController.launchSelf,
 		ConsumeBattery = debug.getproto(Knit.Controllers.BatteryController.onKitLocalActivated, 1),
 		ConsumeItem = debug.getproto(Knit.Controllers.ConsumeController.onEnable, 1),
 		ConsumeSoul = Knit.Controllers.GrimReaperController.consumeSoul,
@@ -746,7 +744,6 @@ run(function()
 		GuitarHeal = Knit.Controllers.GuitarController.performHeal,
 		HannahKill = debug.getproto(Knit.Controllers.HannahController.registerExecuteInteractions, 1),
 		HarvestCrop = debug.getproto(debug.getproto(Knit.Controllers.CropController.KnitStart, 4), 1),
-		KaliyahPunch = debug.getproto(Knit.Controllers.DragonSlayerController.onKitLocalActivated, 1),
 		MageSelect = debug.getproto(Knit.Controllers.MageController.registerTomeInteraction, 1),
 		MinerDig = debug.getproto(Knit.Controllers.MinerController.setupMinerPrompts, 1),
 		PickupItem = Knit.Controllers.ItemDropController.checkForPickup,
@@ -2501,47 +2498,6 @@ run(function()
 	end
 	
 	local LongJumpMethods = {
-		cannon = function(_, pos, dir)
-			pos = pos - Vector3.new(0, (entitylib.character.HipHeight + (entitylib.character.RootPart.Size.Y / 2)) - 3, 0)
-			local rounded = Vector3.new(math.round(pos.X / 3) * 3, math.round(pos.Y / 3) * 3, math.round(pos.Z / 3) * 3)
-			bedwars.placeBlock(rounded, 'cannon', false)
-	
-			task.delay(0, function()
-				local block, blockpos = getPlacedBlock(rounded)
-				if block and block.Name == 'cannon' and (entitylib.character.RootPart.Position - block.Position).Magnitude < 20 then
-					local breaktype = bedwars.ItemMeta[block.Name].block.breakType
-					local tool = store.tools[breaktype]
-					if tool then
-						switchItem(tool.tool)
-					end
-	
-					bedwars.Client:Get(remotes.CannonAim):SendToServer({
-						cannonBlockPos = blockpos,
-						lookVector = dir
-					})
-	
-					local broken = 0.1
-					if bedwars.BlockController:calculateBlockDamage(lplr, {blockPosition = blockpos}) < block:GetAttribute('Health') then
-						broken = 0.4
-						bedwars.breakBlock(block, true, true)
-					end
-	
-					task.delay(broken, function()
-						for _ = 1, 3 do
-							local call = bedwars.Client:Get(remotes.CannonLaunch):CallServer({cannonBlockPos = blockpos})
-							if call then
-								bedwars.breakBlock(block, true, true)
-								JumpSpeed = 5.25 * Value.Value
-								JumpTick = tick() + 2.3
-								Direction = Vector3.new(dir.X, 0, dir.Z).Unit
-								break
-							end
-							task.wait(0.1)
-						end
-					end)
-				end
-			end)
-		end,
 		cat = function(_, _, dir)
 			LongJump:Clean(vapeEvents.CatPounce.Event:Connect(function()
 				JumpSpeed = 4 * Value.Value
@@ -4001,32 +3957,6 @@ run(function()
 			AutoKit:Clean(function()
 				bedwars.CatController.leap = old
 			end)
-		end,
-		davey = function()
-			local old = bedwars.CannonHandController.launchSelf
-			bedwars.CannonHandController.launchSelf = function(...)
-				local res = {old(...)}
-				local self, block = ...
-	
-				if block:GetAttribute('PlacedByUserId') == lplr.UserId and (block.Position - entitylib.character.RootPart.Position).Magnitude < 30 then
-					task.spawn(bedwars.breakBlock, block, false, nil, true)
-				end
-	
-				return unpack(res)
-			end
-	
-			AutoKit:Clean(function()
-				bedwars.CannonHandController.launchSelf = old
-			end)
-		end,
-		dragon_slayer = function()
-			kitCollection('KaliyahPunchInteraction', function(v)
-				bedwars.DragonSlayerController:deleteEmblem(v)
-				bedwars.DragonSlayerController:playPunchAnimation(Vector3.zero)
-				bedwars.Client:Get(remotes.KaliyahPunch):SendToServer({
-					target = v
-				})
-			end, 18, true)
 		end,
 		farmer_cletus = function()
 			kitCollection('HarvestableCrop', function(v)
