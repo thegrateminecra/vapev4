@@ -88,7 +88,7 @@ Sprint = vape.Categories.Combat:CreateModule({
 	end,
 	Tooltip = 'Sets your sprinting to true.'
 })
-end)()
+end)
 run(function()
 local AutoGamble
 
@@ -124,4 +124,4 @@ AutoGamble = vape.Categories.World:CreateModule({
 	end,
 	Tooltip = 'Automatically opens lucky crates, piston inspired!'
 })
-end)()
+end)

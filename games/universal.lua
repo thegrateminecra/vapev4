@@ -2809,7 +2809,7 @@ Value = Timer:CreateSlider({
 	Max = 3,
 	Decimal = 10
 })
-end)()
+end)
 run(function()
 local AimAssist
 local Targets
@@ -3700,7 +3700,7 @@ Distance = TriggerBot:CreateSlider({
 		return val == 1 and 'stud' or 'studs'
 	end
 })
-end)()
+end)
 run(function()
 local Atmosphere
 local Toggles = {}
@@ -4802,7 +4802,7 @@ Value = TimeChanger:CreateSlider({
 	end
 })
 
-end)()
+end)
 run(function()
 local Arrows
 local Targets
@@ -7909,7 +7909,7 @@ Background = Waypoints:CreateSlider({
 	Decimal = 10
 })
 
-end)()
+end)
 run(function()
 local AnimationPlayer
 local IDBox
@@ -8479,7 +8479,7 @@ State = StateSpoofer:CreateDropdown({
 	Name = 'Humanoid State',
 	List = states
 })
-end)()
+end)
 run(function()
 local connections = {}
 
@@ -8964,4 +8964,4 @@ List = Xray:CreateTextList({
 		end
 	end
 })
-end)()
+end)

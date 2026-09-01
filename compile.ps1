@@ -23,7 +23,7 @@ function Compile-ModularGame($folderPath, $outputFile) {
 		foreach ($f in $luaFiles) {
 			$parts += (Get-Content $f.FullName -Raw)
 		}
-		$parts += "end)()"
+		$parts += "end)"
 	}
 
 	$outPath = Join-Path $deployGames $outputFile
