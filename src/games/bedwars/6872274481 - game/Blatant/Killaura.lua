@@ -138,7 +138,11 @@ run(function()
 							})
 
 							if #plrs > 0 then
+								local oldTool = lplr.Character and lplr.Character:FindFirstChild('HandInvItem') and lplr.Character.HandInvItem.Value
 								pcall(switchItem, sword.tool, 0)
+								if lplr.Character and lplr.Character:FindFirstChild('HandInvItem') and lplr.Character.HandInvItem.Value ~= oldTool then
+									armC0 = nil
+								end
 								local selfpos = entitylib.character.RootPart.Position
 								local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
 
