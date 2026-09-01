@@ -2985,7 +2985,7 @@ components = {
 		
 			for _, module in vape.Modules do
 				module.Object.Visible = module.Visible
-				module.Object.Text = string.rep('â€Š', 12)..module.Name
+				module.Object.Text = string.rep(' ', 12)..module.Name
 				module.Edit.Visible = false
 			end
 		end)
@@ -3010,7 +3010,7 @@ components = {
 		
 			for _, module in vape.Modules do
 				module.Object.Visible = true
-				module.Object.Text = string.rep('â€Š', 50)..module.Name
+				module.Object.Text = string.rep(' ', 50)..module.Name
 				module.Edit.Visible = true
 			end
 		end)
@@ -4505,7 +4505,7 @@ components = {
 			window.Size = UDim2.fromOffset(220, 42 + windowlist.AbsoluteContentSize.Y / scale.Scale)
 			for _, button in component.Buttons do
 				if button.Icon then
-					button.Object.Text = string.rep('â€Š', 39 * scale.Scale)..button.Name
+					button.Object.Text = string.rep(' ', 39 * scale.Scale)..button.Name
 				end
 			end
 		end)
@@ -4528,7 +4528,7 @@ components = {
 		button.FontFace = uipallet.Font
 		button.Name = props.Name
 		button.Size = UDim2.fromOffset(220, 40)
-		button.Text = (props.Icon and string.rep('â€Š', 39) or props.Window and string.rep('â€Š', 17) or string.rep('â€Š', 10))..props.Name
+		button.Text = (props.Icon and string.rep(' ', 39) or props.Window and string.rep(' ', 17) or string.rep(' ', 10))..props.Name
 		button.TextColor3 = color.Dark(uipallet.Text, 0.16)
 		button.TextSize = 14
 		button.TextXAlignment = Enum.TextXAlignment.Left
@@ -5113,7 +5113,7 @@ components = {
 		toggle.BorderSizePixel = 0
 		toggle.FontFace = uipallet.Font
 		toggle.Size = UDim2.new(1, 0, 0, 40)
-		toggle.Text = string.rep('â€Š', 33 * scale.Scale)..props.Name
+		toggle.Text = string.rep(' ', 33 * scale.Scale)..props.Name
 		toggle.TextColor3 = color.Dark(uipallet.Text, 0.16)
 		toggle.TextSize = 14
 		toggle.TextXAlignment = Enum.TextXAlignment.Left
@@ -5166,7 +5166,7 @@ components = {
 		end
 		
 		scale:GetPropertyChangedSignal('Scale'):Connect(function()
-			toggle.Text = string.rep('â€Š', 33 * scale.Scale)..props.Name
+			toggle.Text = string.rep(' ', 33 * scale.Scale)..props.Name
 		end)
 		
 		toggle.MouseEnter:Connect(function()
@@ -5682,7 +5682,7 @@ components = {
 		button.FontFace = uipallet.Font
 		button.Name = props.Name
 		button.Size = UDim2.fromOffset(220, 40)
-		button.Text = string.rep('â€Š', 12)..props.Name
+		button.Text = string.rep(' ', 12)..props.Name
 		button.TextColor3 = color.Dark(uipallet.Text, 0.16)
 		button.TextSize = 14
 		button.TextXAlignment = Enum.TextXAlignment.Left
