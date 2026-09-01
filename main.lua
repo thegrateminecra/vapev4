@@ -29,6 +29,10 @@ local function downloadFile(path, func)
 		if not suc or res == '404: Not Found' then
 			error(res)
 		end
+		local bom = res:find('\xEF\xBB\xBF')
+		if bom then
+			res = res:sub(1, bom - 1) .. res:sub(bom + 3)
+		end
 		if path:find('.lua') then
 			res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after vape updates.\n'..res
 		end

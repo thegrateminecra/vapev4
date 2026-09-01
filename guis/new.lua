@@ -1,4 +1,4 @@
-﻿local vape = {
+local vape = {
 	ActiveBinds = {},
 	Categories = {},
 	GUIColor = {
@@ -207,6 +207,11 @@ do
 
 			if not success or data == '404: Not Found' then
 				error(data)
+			end
+
+			local bom = data:find('\xEF\xBB\xBF')
+			if bom then
+				data = data:sub(1, bom - 1) .. data:sub(bom + 3)
 			end
 
 			if path:find('.lua') then
