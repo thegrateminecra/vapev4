@@ -220,7 +220,7 @@ do
 	end
 
 	getvapeasset = function(path)
-		if path:find('.'.png') then
+		if path:find('.png') then
 			return vapeAssets[path] or ''
 		end
 		if getcustomasset and not inputService.TouchEnabled then
