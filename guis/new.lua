@@ -209,12 +209,11 @@ do
 				error(data)
 			end
 
-			local bom = data:find('\xEF\xBB\xBF')
-			if bom then
-				data = data:sub(1, bom - 1) .. data:sub(bom + 3)
-			end
-
 			if path:find('.lua') then
+				local bom = data:find('\xEF\xBB\xBF')
+				if bom then
+					data = data:sub(1, bom - 1) .. data:sub(bom + 3)
+				end
 				data = '--This watermark is used to delete the file if its cached, remove it to make the file persist after vape updates.\n'..data
 			end
 
@@ -224,13 +223,9 @@ do
 		return (callback or readfile)(path)
 	end
 
-	getvapeasset = function(path)
-		if path:find('.png') then
-			return vapeAssets[path] or ''
-		end
-		if getcustomasset and not inputService.TouchEnabled then
-			return downloadFile(path, getcustomasset)
-		end
+	getvapeasset = not inputService.TouchEnabled and getcustomasset and function(path)
+		return downloadFile(path, getcustomasset)
+	end or function(path)
 		return vapeAssets[path] or ''
 	end
 end
