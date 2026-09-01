@@ -63,7 +63,7 @@ for _, v in vape.Modules do
 		vape:Remove(i)
 	end
 end
-do
+run(function()
 local Sprint
 local old
 
@@ -88,8 +88,8 @@ Sprint = vape.Categories.Combat:CreateModule({
 	end,
 	Tooltip = 'Sets your sprinting to true.'
 })
-end
-do
+end)()
+run(function()
 local AutoGamble
 
 AutoGamble = vape.Categories.World:CreateModule({
@@ -124,4 +124,4 @@ AutoGamble = vape.Categories.World:CreateModule({
 	end,
 	Tooltip = 'Automatically opens lucky crates, piston inspired!'
 })
-end
+end)()
