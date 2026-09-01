@@ -219,9 +219,13 @@ do
 		return (callback or readfile)(path)
 	end
 
-	getvapeasset = not inputService.TouchEnabled and getcustomasset and function(path)
-		return downloadFile(path, getcustomasset)
-	end or function(path)
+	getvapeasset = function(path)
+		if path:find('.png') then
+			return vapeAssets[path] or ''
+		end
+		if getcustomasset and not inputService.TouchEnabled then
+			return downloadFile(path, getcustomasset)
+		end
 		return vapeAssets[path] or ''
 	end
 end
