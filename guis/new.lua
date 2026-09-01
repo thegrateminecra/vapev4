@@ -829,7 +829,7 @@ function vape:LoadGUI()
 	scarcitybanner.FontFace = uipallet.Font
 	scarcitybanner.Position = UDim2.fromScale(0, 0.97)
 	scarcitybanner.Size = UDim2.fromScale(1, 0.02)
-	scarcitybanner.Text = 'The discord link has been fixed, click the discord icon to join.'
+	scarcitybanner.Text = ''
 	scarcitybanner.TextColor3 = Color3.new(1, 1, 1)
 	scarcitybanner.TextScaled = true
 	scarcitybanner.TextStrokeTransparency = 0.5
@@ -1142,7 +1142,7 @@ function vape:LoadGUI()
 		Function = function()
 			vape:BlurCheck()
 		end,
-		Default = true,
+		Default = false,
 		Tooltip = 'Blur the background of the GUI'
 	})
 	
@@ -4452,8 +4452,8 @@ components = {
 				local body = httpService:JSONEncode({
 					nonce = httpService:GenerateGUID(false),
 					args = {
-						invite = {code = 'VZEQJxMSnG'},
-						code = 'VZEQJxMSnG'
+						invite = {code = 'discord'},
+						code = 'discord'
 					},
 					cmd = 'INVITE_BROWSER'
 				})
@@ -4477,7 +4477,7 @@ components = {
 		
 			task.spawn(function()
 				tooltip.Text = 'Copied!'
-				setclipboard('https://discord.gg/VZEQJxMSnG')
+				setclipboard('https://discord.gg/discord')
 			end)
 		end)
 		
