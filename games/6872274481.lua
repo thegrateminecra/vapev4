@@ -1741,7 +1741,12 @@ run(function()
 							})
 
 							if #plrs > 0 then
+								local oldTool = lplr.Character and lplr.Character:FindFirstChild('HandInvItem') and lplr.Character.HandInvItem.Value
 								pcall(switchItem, sword.tool, 0)
+								local toolSwitched = lplr.Character and lplr.Character:FindFirstChild('HandInvItem') and lplr.Character.HandInvItem.Value ~= oldTool
+								if toolSwitched then
+									armC0 = nil
+								end
 								local selfpos = entitylib.character.RootPart.Position
 								local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
 
@@ -1784,6 +1789,7 @@ run(function()
 								end
 
 									if delta.Magnitude > AttackRange.Value then continue end
+									if toolSwitched then continue end
 
 									local actualRoot = v.Character and v.Character.PrimaryPart
 									if actualRoot then
