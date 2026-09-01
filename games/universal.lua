@@ -935,6 +935,7 @@ run(function()
 	end)
 end)
 entitylib.start()
+do
 local AntiFall
 local Method
 local Mode
@@ -2808,6 +2809,8 @@ Value = Timer:CreateSlider({
 	Max = 3,
 	Decimal = 10
 })
+end
+do
 local AimAssist
 local Targets
 local Part
@@ -3697,6 +3700,8 @@ Distance = TriggerBot:CreateSlider({
 		return val == 1 and 'stud' or 'studs'
 	end
 })
+end
+do
 local Atmosphere
 local Toggles = {}
 local newobjects, oldobjects = {}, {}
@@ -4797,6 +4802,8 @@ Value = TimeChanger:CreateSlider({
 	end
 })
 
+end
+do
 local Arrows
 local Targets
 local Color
@@ -7902,6 +7909,8 @@ Background = Waypoints:CreateSlider({
 	Decimal = 10
 })
 
+end
+do
 local AnimationPlayer
 local IDBox
 local Priority
@@ -8470,6 +8479,8 @@ State = StateSpoofer:CreateDropdown({
 	Name = 'Humanoid State',
 	List = states
 })
+end
+do
 local connections = {}
 
 vape.Categories.World:CreateModule({
@@ -8953,3 +8964,4 @@ List = Xray:CreateTextList({
 		end
 	end
 })
+end

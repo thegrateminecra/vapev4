@@ -1194,6 +1194,7 @@ end)
 for _, v in {'AntiRagdoll', 'TriggerBot', 'SilentAim', 'AutoRejoin', 'Rejoin', 'Disabler', 'Timer', 'ServerHop', 'MouseTP', 'MurderMystery'} do
 	vape:Remove(v)
 end
+do
 local AntiFallDirection
 run(function()
 	local AntiFall
@@ -2659,6 +2660,8 @@ AlwaysJump = Speed:CreateToggle({
 	Visible = false,
 	Darker = true
 })
+end
+do
 local AimAssist
 local Targets
 local Sort
@@ -3015,6 +3018,8 @@ Chance = Velocity:CreateSlider({
 	Suffix = '%'
 })
 TargetCheck = Velocity:CreateToggle({Name = 'Only when targeting'})
+end
+do
 local ArmorSwitch
 local Mode
 local Targets
@@ -4277,6 +4282,8 @@ FastDrop = vape.Categories.Inventory:CreateModule({
 	end,
 	Tooltip = 'Drops items fast when you hold Q'
 })
+end
+do
 local BedBreakEffect
 local Mode
 local List
@@ -5327,6 +5334,8 @@ List = WinEffect:CreateDropdown({
 	Name = 'Effects',
 	List = WinEffectName
 })
+end
+do
 local BedESP
 local Reference = {}
 local Folder = Instance.new('Folder')
@@ -6072,6 +6081,8 @@ Color = StorageESP:CreateColorSlider({
 	end,
 	Darker = true
 })
+end
+do
 local AutoBalloon
 
 AutoBalloon = vape.Categories.Utility:CreateModule({
@@ -7247,6 +7258,8 @@ TrapDisabler = vape.Categories.Utility:CreateModule({
 	Name = 'TrapDisabler',
 	Tooltip = 'Disables Snap Traps'
 })
+end
+do
 vape.Categories.World:CreateModule({
 	Name = 'Anti-AFK',
 	Function = function(callback)
@@ -8148,3 +8161,4 @@ Transparency = Schematica:CreateSlider({
 		end
 	end
 })
+end

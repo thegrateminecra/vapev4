@@ -15,12 +15,15 @@ function Compile-ModularGame($folderPath, $outputFile) {
 	}
 
 	# then each subfolder's .lua files, alphabetically by folder then by file
+	# wrap each subfolder in do...end to keep local registers under the 200 limit
 	$subDirs = Get-ChildItem -Path $folderPath -Directory | Sort-Object Name
 	foreach ($dir in $subDirs) {
+		$parts += "do"
 		$luaFiles = Get-ChildItem -Path $dir.FullName -Filter "*.lua" | Sort-Object Name
 		foreach ($f in $luaFiles) {
 			$parts += (Get-Content $f.FullName -Raw)
 		}
+		$parts += "end"
 	}
 
 	$outPath = Join-Path $deployGames $outputFile
