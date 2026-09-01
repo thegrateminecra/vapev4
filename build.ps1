@@ -11,11 +11,19 @@ $zip = "$root\vapev4.zip"
 Write-Host "Vape V4 Build" -ForegroundColor Cyan
 Write-Host "-------------"
 
+# compile modular src -> flat deployment files
+Write-Host "`n[1/6] Compiling modular source..." -ForegroundColor Yellow
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$root\compile.ps1"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "FAIL - compile failed" -ForegroundColor Red
+    exit 1
+}
+
 # verify no stale URLs
-Write-Host "`n[1/4] Checking for stale URLs..." -ForegroundColor Yellow
+Write-Host "`n[2/6] Checking for stale URLs..." -ForegroundColor Yellow
 $stale = Get-ChildItem -Path $root -Recurse -Include *.lua,*.md -ErrorAction SilentlyContinue |
     Select-String -Pattern "itzdxsire|7GrandDadPGN/VapeV4" |
-    Where-Object { $_.Path -notmatch "\.git\\" -and $_.Path -notmatch "REFERENCE\.md$" }
+    Where-Object { $_.Path -notmatch "\.git\\" -and $_.Path -notmatch "REFERENCE\.md$" -and $_.Path -notmatch "\\src\\" }
 
 if ($stale) {
     Write-Host "FAIL - found stale references:" -ForegroundColor Red
@@ -25,7 +33,7 @@ if ($stale) {
 Write-Host "  All clean" -ForegroundColor Green
 
 # verify critical files exist
-Write-Host "`n[2/4] Checking critical files..." -ForegroundColor Yellow
+Write-Host "`n[3/6] Checking critical files..." -ForegroundColor Yellow
 $required = @("NewMainScript.lua", "main.lua", "loader.lua", "loadstring")
 $missing = $required | Where-Object { -not (Test-Path "$root\$_") }
 if ($missing) {
@@ -35,7 +43,7 @@ if ($missing) {
 Write-Host "  All present" -ForegroundColor Green
 
 # verify bedwars modules exist and have no kick
-Write-Host "`n[3/4] Checking Bedwars modules..." -ForegroundColor Yellow
+Write-Host "`n[4/6] Checking Bedwars modules..." -ForegroundColor Yellow
 $bwFiles = @("6872274481.lua", "6872265039.lua", "8444591321.lua", "8560631822.lua")
 foreach ($f in $bwFiles) {
     $path = "$root\games\$f"
@@ -48,11 +56,12 @@ foreach ($f in $bwFiles) {
         Write-Host "  FAIL - $f contains a kick/shutdown!" -ForegroundColor Red
         exit 1
     }
-    Write-Host "  $f - OK" -ForegroundColor Green
+    $size = [math]::Round((Get-Item $path).Length / 1KB)
+    Write-Host "  $f - OK ($size KB)" -ForegroundColor Green
 }
 
 # package dist
-Write-Host "`n[4/4] Packaging dist..." -ForegroundColor Yellow
+Write-Host "`n[5/6] Packaging dist..." -ForegroundColor Yellow
 if (Test-Path $outDir) { cmd /c "rd /s /q `"$outDir`"" }
 if (Test-Path $zip) { cmd /c "del /f `"$zip`"" }
 New-Item -ItemType Directory -Path $outDir -Force | Out-Null
@@ -79,4 +88,25 @@ Write-Host "  loadstring(game:HttpGet(`"https://raw.githubusercontent.com/$repo/
 
 if ($Test) {
     Write-Host "`n--- Dry run complete, no files uploaded ---" -ForegroundColor DarkYellow
+    exit 0
+}
+
+Write-Host "`n[6/6] Committing and pushing..." -ForegroundColor Yellow
+git -C $root add -A
+$changes = git -C $root status --porcelain
+if (-not $changes) {
+    Write-Host "  No changes to commit" -ForegroundColor DarkGray
+} else {
+    $msg = "build: update vapev4.zip"
+    git -C $root commit -m $msg
+    if ($?) {
+        git -C $root push origin $branch
+        if ($?) {
+            Write-Host "  Pushed to $repo@$branch" -ForegroundColor Green
+        } else {
+            Write-Host "  Push failed" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "  Commit failed" -ForegroundColor Red
+    }
 }
