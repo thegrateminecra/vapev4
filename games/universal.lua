@@ -935,6 +935,7 @@ run(function()
 	end)
 end)
 entitylib.start()
+do
 local AntiFall
 local Method
 local Mode
@@ -3694,9 +3695,11 @@ Distance = TriggerBot:CreateSlider({
 	Max = 1000,
 	Default = 1000,
 	Suffix = function(val)
-		return val == 1 and 'stud' or 'studs'
+	return val == 1 and 'stud' or 'studs'
 	end
 })
+end
+do
 local Atmosphere
 local Toggles = {}
 local newobjects, oldobjects = {}, {}
@@ -3843,6 +3846,8 @@ for i, v in apidump do
 		end
 	end
 end
+end
+do
 local Breadcrumbs
 local Texture
 local Lifetime
@@ -4792,10 +4797,12 @@ Value = TimeChanger:CreateSlider({
 	Default = 12,
 	Function = function(val)
 		if TimeChanger.Enabled then
-			lightingService.TimeOfDay = val..':00:00'
+	lightingService.TimeOfDay = val..':00:00'
 		end
 	end
 })
+end
+do
 
 local Arrows
 local Targets
@@ -6541,10 +6548,12 @@ Texture = PlayerModel:CreateTextBox({
 	Placeholder = 'texture id',
 	Function = function()
 		for _, part in models do 
-			part.Mesh.TextureId = Texture.Value
+		part.Mesh.TextureId = Texture.Value
 		end
 	end
 })
+end
+do
 
 local Radar
 local Targets
@@ -7597,9 +7606,11 @@ do
 					fill.Size = UDim2.fromScale(self.playPosition / self.playDuration, 1)
 				end
 			end
-		until false
+	until false
 	end
 end
+end
+do
 local Tracers
 local Targets
 local Color
@@ -7901,6 +7912,8 @@ Background = Waypoints:CreateSlider({
 	Max = 1,
 	Decimal = 10
 })
+end
+do
 
 local AnimationPlayer
 local IDBox
@@ -8953,3 +8966,4 @@ List = Xray:CreateTextList({
 		end
 	end
 })
+end
