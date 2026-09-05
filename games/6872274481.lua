@@ -1685,42 +1685,51 @@ run(function()
 						return origViewmodelPlayAnim(self, ...)
 					end
 
-					task.spawn(function()
-						local started = false
-						repeat
-							if Attacking then
-								if not armC0 then
-									armC0 = gameCamera.Viewmodel.RightHand.RightWrist.C0
-								end
-								local first = not started
-								started = true
+				task.spawn(function()
+					local started = false
+					repeat
+						local vm = gameCamera:FindFirstChild('Viewmodel')
+						local wrist = vm and vm:FindFirstChild('RightHand') and vm.RightHand:FindFirstChild('RightWrist')
+						if not wrist then
+							armC0 = nil
+							started = false
+							task.wait(0.1)
+						elseif Attacking and entitylib.isAlive then
+							if not armC0 then
+								armC0 = wrist.C0
+							end
+							local first = not started
+							started = true
 
-								if AnimationMode.Value == 'Random' then
-									anims.Random = {{CFrame = CFrame.Angles(math.rad(math.random(1, 360)), math.rad(math.random(1, 360)), math.rad(math.random(1, 360))), Time = 0.12}}
-								end
+							if AnimationMode.Value == 'Random' then
+								anims.Random = {{CFrame = CFrame.Angles(math.rad(math.random(1, 360)), math.rad(math.random(1, 360)), math.rad(math.random(1, 360))), Time = 0.12}}
+							end
 
-								for _, v in anims[AnimationMode.Value] do
-									AnimTween = tweenService:Create(gameCamera.Viewmodel.RightHand.RightWrist, TweenInfo.new(first and (AnimationTween.Enabled and 0.001 or 0.1) or v.Time / AnimationSpeed.Value, Enum.EasingStyle.Linear), {
-										C0 = armC0 * v.CFrame
-									})
-									AnimTween:Play()
-									AnimTween.Completed:Wait()
-									first = false
-									if (not Killaura.Enabled) or (not Attacking) then break end
-								end
-							elseif started then
-								started = false
-								AnimTween = tweenService:Create(gameCamera.Viewmodel.RightHand.RightWrist, TweenInfo.new(AnimationTween.Enabled and 0.001 or 0.3, Enum.EasingStyle.Exponential), {
+							for _, v in anims[AnimationMode.Value] do
+								if not wrist or not armC0 then break end
+								AnimTween = tweenService:Create(wrist, TweenInfo.new(first and (AnimationTween.Enabled and 0.001 or 0.1) or v.Time / AnimationSpeed.Value, Enum.EasingStyle.Linear), {
+									C0 = armC0 * v.CFrame
+								})
+								AnimTween:Play()
+								AnimTween.Completed:Wait()
+								first = false
+								if (not Killaura.Enabled) or (not Attacking) then break end
+							end
+						elseif started then
+							started = false
+							if wrist and armC0 then
+								AnimTween = tweenService:Create(wrist, TweenInfo.new(AnimationTween.Enabled and 0.001 or 0.3, Enum.EasingStyle.Exponential), {
 									C0 = armC0
 								})
 								AnimTween:Play()
 							end
+						end
 
-							if not started then
-								task.wait(1 / UpdateRate.Value)
-							end
-						until (not Killaura.Enabled) or (not Animation.Enabled)
-					end)
+						if not started then
+							task.wait(1 / UpdateRate.Value)
+						end
+					until (not Killaura.Enabled) or (not Animation.Enabled)
+				end)
 				end
 
 				repeat
@@ -1869,13 +1878,16 @@ run(function()
 					origViewmodelIsVisible = nil
 					origViewmodelPlayAnim = nil
 				end
-				Attacking = false
-				if armC0 then
-					AnimTween = tweenService:Create(gameCamera.Viewmodel.RightHand.RightWrist, TweenInfo.new(AnimationTween.Enabled and 0.001 or 0.3, Enum.EasingStyle.Exponential), {
+			Attacking = false
+			if armC0 then
+				local disableWrist = gameCamera:FindFirstChild('Viewmodel') and gameCamera.Viewmodel:FindFirstChild('RightHand') and gameCamera.Viewmodel.RightHand:FindFirstChild('RightWrist')
+				if disableWrist then
+					AnimTween = tweenService:Create(disableWrist, TweenInfo.new(AnimationTween.Enabled and 0.001 or 0.3, Enum.EasingStyle.Exponential), {
 						C0 = armC0
 					})
 					AnimTween:Play()
 				end
+			end
 			end
 		end,
 		Tooltip = 'Attack players around you\nwithout aiming at them.'
@@ -7644,7 +7656,7 @@ local customlist, parts = {}, {}
 local function customHealthbar(self, blockRef, health, maxHealth, changeHealth, block)
 	if block:GetAttribute('NoHealthbar') then return end
 	if not self.healthbarPart or not self.healthbarBlockRef or self.healthbarBlockRef.blockPosition ~= blockRef.blockPosition then
-		self.healthbarMaid:DoCleaning()
+		if self.healthbarMaid then self.healthbarMaid:DoCleaning() end
 		self.healthbarBlockRef = blockRef
 		local create = bedwars.Roact.createElement
 		local percent = math.clamp(health / maxHealth, 0, 1)

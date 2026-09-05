@@ -864,6 +864,7 @@ function vape:LoadGUI()
 	scale = Instance.new('UIScale')
 	scale.Scale = math.max(gui.AbsoluteSize.X / 1920, 0.6)
 	scale.Parent = scaledgui
+	vape.guiscale = scale
 	scaledgui.Size = UDim2.fromScale(1 / scale.Scale, 1 / scale.Scale)
 	components.GUI({})
 	
