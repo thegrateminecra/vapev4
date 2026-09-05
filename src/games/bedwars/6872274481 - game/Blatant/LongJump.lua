@@ -148,7 +148,7 @@ LongJump = vape.Categories.Blatant:CreateModule({
 				end
 			end))
 
-			if store.hand and LongJumpMethods[store.hand.tool.Name] then
+			if store.hand and store.hand.tool and LongJumpMethods[store.hand.tool.Name] then
 				task.spawn(LongJumpMethods[store.hand.tool.Name], getItem(store.hand.tool.Name), start, (CameraDir.Enabled and gameCamera or entitylib.character.RootPart).CFrame.LookVector)
 				return
 			end

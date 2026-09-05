@@ -1705,16 +1705,25 @@ run(function()
 								anims.Random = {{CFrame = CFrame.Angles(math.rad(math.random(1, 360)), math.rad(math.random(1, 360)), math.rad(math.random(1, 360))), Time = 0.12}}
 							end
 
-							for _, v in anims[AnimationMode.Value] do
-								if not wrist or not armC0 then break end
-								AnimTween = tweenService:Create(wrist, TweenInfo.new(first and (AnimationTween.Enabled and 0.001 or 0.1) or v.Time / AnimationSpeed.Value, Enum.EasingStyle.Linear), {
-									C0 = armC0 * v.CFrame
-								})
-								AnimTween:Play()
-								AnimTween.Completed:Wait()
-								first = false
-								if (not Killaura.Enabled) or (not Attacking) then break end
+						for _, v in anims[AnimationMode.Value] do
+							if not wrist or not armC0 then break end
+							local tweenTime = first and (AnimationTween.Enabled and 0.001 or 0.1) or v.Time / AnimationSpeed.Value
+							AnimTween = tweenService:Create(wrist, TweenInfo.new(tweenTime, Enum.EasingStyle.Linear), {
+								C0 = armC0 * v.CFrame
+							})
+							AnimTween:Play()
+							local elapsed = 0
+							while elapsed < tweenTime do
+								task.wait(0.02)
+								elapsed = elapsed + 0.02
+								if not wrist or not wrist.Parent or not Killaura.Enabled or not Attacking then
+									pcall(function() AnimTween:Cancel() end)
+									break
+								end
 							end
+							first = false
+							if (not Killaura.Enabled) or (not Attacking) then break end
+						end
 						elseif started then
 							started = false
 							if wrist and armC0 then
@@ -2279,7 +2288,7 @@ LongJump = vape.Categories.Blatant:CreateModule({
 				end
 			end))
 
-			if store.hand and LongJumpMethods[store.hand.tool.Name] then
+			if store.hand and store.hand.tool and LongJumpMethods[store.hand.tool.Name] then
 				task.spawn(LongJumpMethods[store.hand.tool.Name], getItem(store.hand.tool.Name), start, (CameraDir.Enabled and gameCamera or entitylib.character.RootPart).CFrame.LookVector)
 				return
 			end
@@ -7655,8 +7664,9 @@ local customlist, parts = {}, {}
 
 local function customHealthbar(self, blockRef, health, maxHealth, changeHealth, block)
 	if block:GetAttribute('NoHealthbar') then return end
+	if not self.healthbarMaid or not self.healthbarProgressRef then return end
 	if not self.healthbarPart or not self.healthbarBlockRef or self.healthbarBlockRef.blockPosition ~= blockRef.blockPosition then
-		if self.healthbarMaid then self.healthbarMaid:DoCleaning() end
+		self.healthbarMaid:DoCleaning()
 		self.healthbarBlockRef = blockRef
 		local create = bedwars.Roact.createElement
 		local percent = math.clamp(health / maxHealth, 0, 1)

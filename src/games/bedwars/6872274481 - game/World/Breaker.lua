@@ -16,8 +16,9 @@ local customlist, parts = {}, {}
 
 local function customHealthbar(self, blockRef, health, maxHealth, changeHealth, block)
 	if block:GetAttribute('NoHealthbar') then return end
+	if not self.healthbarMaid or not self.healthbarProgressRef then return end
 	if not self.healthbarPart or not self.healthbarBlockRef or self.healthbarBlockRef.blockPosition ~= blockRef.blockPosition then
-		if self.healthbarMaid then self.healthbarMaid:DoCleaning() end
+		self.healthbarMaid:DoCleaning()
 		self.healthbarBlockRef = blockRef
 		local create = bedwars.Roact.createElement
 		local percent = math.clamp(health / maxHealth, 0, 1)

@@ -102,16 +102,25 @@ run(function()
 								anims.Random = {{CFrame = CFrame.Angles(math.rad(math.random(1, 360)), math.rad(math.random(1, 360)), math.rad(math.random(1, 360))), Time = 0.12}}
 							end
 
-							for _, v in anims[AnimationMode.Value] do
-								if not wrist or not armC0 then break end
-								AnimTween = tweenService:Create(wrist, TweenInfo.new(first and (AnimationTween.Enabled and 0.001 or 0.1) or v.Time / AnimationSpeed.Value, Enum.EasingStyle.Linear), {
-									C0 = armC0 * v.CFrame
-								})
-								AnimTween:Play()
-								AnimTween.Completed:Wait()
-								first = false
-								if (not Killaura.Enabled) or (not Attacking) then break end
+						for _, v in anims[AnimationMode.Value] do
+							if not wrist or not armC0 then break end
+							local tweenTime = first and (AnimationTween.Enabled and 0.001 or 0.1) or v.Time / AnimationSpeed.Value
+							AnimTween = tweenService:Create(wrist, TweenInfo.new(tweenTime, Enum.EasingStyle.Linear), {
+								C0 = armC0 * v.CFrame
+							})
+							AnimTween:Play()
+							local elapsed = 0
+							while elapsed < tweenTime do
+								task.wait(0.02)
+								elapsed = elapsed + 0.02
+								if not wrist or not wrist.Parent or not Killaura.Enabled or not Attacking then
+									pcall(function() AnimTween:Cancel() end)
+									break
+								end
 							end
+							first = false
+							if (not Killaura.Enabled) or (not Attacking) then break end
+						end
 						elseif started then
 							started = false
 							if wrist and armC0 then
